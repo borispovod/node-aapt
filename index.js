@@ -1,26 +1,26 @@
 'use strict';
 
-const exec   = require('child_process').exec;
-const path   = require('path');
-const os     = require('os');
-const fs     = require('fs');
+var exec   = require('child_process').exec;
+var path   = require('path');
+var os     = require('os');
+var fs     = require('fs');
 
-const aapt = path.join(__dirname, 'lib', os.type(), 'aapt');
+var aapt = path.join(__dirname, 'lib', os.type(), 'aapt');
 
 module.exports = function (filename, callback) {
-  fs.access(aapt, fs.X_OK, (err) => {
+  fs.access(aapt, fs.X_OK, function (err) {
     if(err) {
       err.msg = ['Hmmm, what OS are you using?', os.type()].join(' ');
       callback(err, null);
     } else {
-      const cmd = [aapt, 'dump', 'badging', filename, '|', 'grep', 'package'].join(' ');
-      exec(cmd, (err, stdout, stderr) => {
-        const error = err || stderr;
+      var cmd = [aapt, 'dump', 'badging', filename, '|', 'grep', 'package'].join(' ');
+      exec(cmd, function (err, stdout, stderr) {
+        var error = err || stderr;
         if(error) {
           callback(error, null);
         } else {
-          const match = stdout.match(/name='([^']+)'[\s]*versionCode='(\d+)'[\s]*versionName='([^']+)/);
-          const info = {
+          var match = stdout.match(/name='([^']+)'[\s]*versionCode='(\d+)'[\s]*versionName='([^']+)/);
+          var info = {
             packageName : match[1],
             versionCode : match[2],
             versionName : match[3],
